@@ -1,3 +1,6 @@
 package com.example.a2048
 
-data class ScoreItem(val place: Int, val score: Int)
+data class ScoreItem(
+    val position: Int,
+    val score: Int
+)
