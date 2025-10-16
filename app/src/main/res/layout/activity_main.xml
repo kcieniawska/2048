@@ -37,6 +37,41 @@
         android:layout_weight="1"
         android:padding="16dp"/>
 
+    <!-- Kontener Easter Egga (napis nad zdjęciem) -->
+    <LinearLayout
+        android:id="@+id/easterEggContainer"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:visibility="gone"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/hiddenText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pozdrowienia ze słonecznego Podhala :)"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:layout_gravity="center_horizontal"
+            android:paddingBottom="16dp"
+            android:visibility="gone"/>
+
+        <ImageView
+            android:id="@+id/hiddenImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:maxWidth="250dp"
+            android:maxHeight="250dp"
+            android:scaleType="fitCenter"
+            android:visibility="gone"
+            android:src="@drawable/easter_egg_image"
+            android:contentDescription="Ukryte zdjęcie"/>
+    </LinearLayout>
+
     <!-- Przycisk startu od nowa -->
     <Button
         android:id="@+id/btnRestart"
@@ -70,50 +105,50 @@
                 android:padding="8dp"
                 android:clipToPadding="false"/>
         </LinearLayout>
-<!-- Layout autora -->
-<LinearLayout
-    android:id="@+id/layoutAuthor"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp"
-    android:visibility="gone">
 
-    <!-- Wersja -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Wersja 1.0"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        android:paddingBottom="4dp"/>
+        <!-- Layout autora -->
+        <LinearLayout
+            android:id="@+id/layoutAuthor"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:visibility="gone">
 
-    <!-- Ostatnia aktualizacja -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Ostatnia aktualizacja: 16.10.2025"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        android:paddingBottom="16dp"/>
+            <!-- Wersja i aktualizacja -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Wersja 1.0"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:paddingBottom="4dp"/>
 
-    <!-- Autor i wynik -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Autor: Karolina Cieniawska | 14690"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:paddingBottom="8dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ostatnia aktualizacja: 16.10.2025"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:paddingBottom="16dp"/>
 
-    <!-- Opis aplikacji -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Aplikacja wykonana na przedmiot &quot;Aplikacje mobilne&quot; na Akademię Nauk Stosowanych w Nowym Targu"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"/>
-</LinearLayout>
+            <!-- Autor i wynik -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Autor: Karolina Cieniawska | 14690"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:paddingBottom="8dp"/>
+
+            <!-- Opis aplikacji -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Aplikacja wykonana na przedmiot &quot;Aplikacje mobilne&quot; na Akademię Nauk Stosowanych w Nowym Targu"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"/>
+        </LinearLayout>
     </FrameLayout>
 
     <!-- Zakładki na dole -->
@@ -125,5 +160,4 @@
         app:tabSelectedTextColor="@android:color/white"
         app:tabTextColor="#AAAAAA"
         android:layout_marginTop="8dp"/>
-
 </LinearLayout>
