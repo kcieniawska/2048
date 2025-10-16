@@ -1,10 +1,129 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#121212"
+    android:padding="8dp">
 
+    <!-- Tytuł gry -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2048"
+        android:textSize="36sp"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="8dp"/>
+
+    <!-- Aktualny wynik -->
+    <TextView
+        android:id="@+id/tvScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Wynik: 0"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="8dp"/>
+
+    <!-- Plansza gry -->
     <com.example.a2048.GameView
         android:id="@+id/gameView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-</FrameLayout>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="16dp"/>
+
+    <!-- Przycisk startu od nowa -->
+    <Button
+        android:id="@+id/btnRestart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Zacznij od nowa"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#D84315"
+        android:padding="12dp"
+        android:layout_marginTop="8dp"/>
+
+    <!-- Kontener na zawartość zakładek -->
+    <FrameLayout
+        android:id="@+id/tabContent"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="8dp">
+
+        <!-- Layout wyników -->
+        <LinearLayout
+            android:id="@+id/layoutScores"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvScores"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="8dp"
+                android:clipToPadding="false"/>
+        </LinearLayout>
+<!-- Layout autora -->
+<LinearLayout
+    android:id="@+id/layoutAuthor"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:visibility="gone">
+
+    <!-- Wersja -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Wersja 1.0"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:paddingBottom="4dp"/>
+
+    <!-- Ostatnia aktualizacja -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ostatnia aktualizacja: 16.10.2025"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:paddingBottom="16dp"/>
+
+    <!-- Autor i wynik -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Autor: Karolina Cieniawska | 14690"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:paddingBottom="8dp"/>
+
+    <!-- Opis aplikacji -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Aplikacja wykonana na przedmiot &quot;Aplikacje mobilne&quot; na Akademię Nauk Stosowanych w Nowym Targu"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"/>
+</LinearLayout>
+    </FrameLayout>
+
+    <!-- Zakładki na dole -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabIndicatorColor="@android:color/white"
+        app:tabSelectedTextColor="@android:color/white"
+        app:tabTextColor="#AAAAAA"
+        android:layout_marginTop="8dp"/>
+
+</LinearLayout>
