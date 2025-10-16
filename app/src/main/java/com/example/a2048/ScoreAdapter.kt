@@ -9,9 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 class ScoreAdapter(private val scores: List<ScoreItem>) :
     RecyclerView.Adapter<ScoreAdapter.ScoreViewHolder>() {
 
-    class ScoreViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val tvPlace: TextView = view.findViewById(R.id.tvPlace)
-        val tvScore: TextView = view.findViewById(R.id.tvScore)
+    inner class ScoreViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val tvPosition: TextView = view.findViewById(R.id.tvPosition)
+        val tvScoreValue: TextView = view.findViewById(R.id.tvScoreValue)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ScoreViewHolder {
@@ -22,8 +22,8 @@ class ScoreAdapter(private val scores: List<ScoreItem>) :
 
     override fun onBindViewHolder(holder: ScoreViewHolder, position: Int) {
         val item = scores[position]
-        holder.tvPlace.text = "${item.place}."
-        holder.tvScore.text = item.score.toString()
+        holder.tvPosition.text = "${item.position}."
+        holder.tvScoreValue.text = item.score.toString()
     }
 
     override fun getItemCount(): Int = scores.size

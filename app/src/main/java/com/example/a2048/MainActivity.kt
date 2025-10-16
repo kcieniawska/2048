@@ -5,17 +5,17 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.tabs.TabLayout
-import java.text.SimpleDateFormat
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
-    private val TAG = "MainActivity"
 
     private lateinit var gameView: GameView
     private lateinit var manager: GameManager
@@ -35,42 +35,37 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // findViewById - zabezpieczenie: jeśli któryś view nie istnieje, logujemy i kończymy init
-        try {
-            gameView = findViewById(R.id.gameView)
-            easterEggContainer = findViewById(R.id.easterEggContainer)
-            hiddenImage = findViewById(R.id.hiddenImage)
-            hiddenText = findViewById(R.id.hiddenText)
-            btnRestart = findViewById(R.id.btnRestart)
-            tvScore = findViewById(R.id.tvScore)
-            tabLayout = findViewById(R.id.tabLayout)
-            rvScores = findViewById(R.id.rvScores)
-            layoutAuthor = findViewById(R.id.layoutAuthor)
-            tvNoScores = findViewById(R.id.tvNoScores)
-        } catch (e: Exception) {
-            Log.e(TAG, "Brak niektórych widoków w layout: ${e.message}", e)
-            Toast.makeText(this, "Błąd layoutu: brak widoku. Sprawdź activity_main.xml", Toast.LENGTH_LONG).show()
-            return
-        }
+        gameView = findViewById(R.id.gameView)
+        easterEggContainer = findViewById(R.id.easterEggContainer)
+        hiddenImage = findViewById(R.id.hiddenImage)
+        hiddenText = findViewById(R.id.hiddenText)
+        btnRestart = findViewById(R.id.btnRestart)
+        tvScore = findViewById(R.id.tvScore)
+        tabLayout = findViewById(R.id.tabLayout)
+        rvScores = findViewById(R.id.rvScores)
+        layoutAuthor = findViewById(R.id.layoutAuthor)
+        tvNoScores = findViewById(R.id.tvNoScores)
+        val tvTitle: TextView = findViewById(R.id.tvTitle)
 
         manager = GameManager()
         gameView.init(manager)
-
-        // przygotuj RecyclerView raz (bez adaptera na start)
-        rvScores.layoutManager = LinearLayoutManager(this)
-        rvScores.setHasFixedSize(true)
 
         updateScoreText()
         setupTabs()
         setupGestures()
 
+        // 🔄 Restart gry z zapisem wyniku
         btnRestart.setOnClickListener {
+            if (manager.score > 0) {
+                saveScore()
+                Log.d("SCORE_DEBUG", "Zapisano wynik z restartu: ${manager.score}")
+            }
             manager.reset()
             gameView.drawBoard()
             updateScoreText()
         }
 
-        val tvTitle: TextView = findViewById(R.id.tvTitle)
+        // 🥚 Easter Egg – 2x kliknięcie tytułu
         tvTitle.setOnClickListener {
             titleClickCount++
             if (titleClickCount >= 2) {
@@ -80,36 +75,63 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // 🥚 Pokazanie / ukrycie easter egga
     private fun toggleEasterEgg() {
         if (easterEggContainer.visibility == View.GONE) {
             hiddenImage.visibility = View.VISIBLE
             hiddenText.visibility = View.VISIBLE
             easterEggContainer.alpha = 0f
             easterEggContainer.visibility = View.VISIBLE
-            easterEggContainer.animate().alpha(1f).setDuration(350).start()
-            hiddenImage.scaleX = 0.6f
-            hiddenImage.scaleY = 0.6f
-            hiddenImage.animate().scaleX(1f).scaleY(1f).setDuration(350).start()
-            // ukryj planszę i kontrolki
-            gameView.visibility = View.GONE
-            btnRestart.visibility = View.GONE
-            tvScore.visibility = View.GONE
+            easterEggContainer.animate().alpha(1f).setDuration(500).start()
+
+            hiddenImage.scaleX = 0.5f
+            hiddenImage.scaleY = 0.5f
+            hiddenImage.animate().scaleX(1f).scaleY(1f).setDuration(500).start()
+
+            gameView.animate().alpha(0f).setDuration(500).withEndAction {
+                gameView.visibility = View.GONE
+                gameView.alpha = 1f
+            }.start()
+
+            btnRestart.animate().alpha(0f).setDuration(500).withEndAction {
+                btnRestart.visibility = View.GONE
+                btnRestart.alpha = 1f
+            }.start()
+
+            tvScore.animate().alpha(0f).setDuration(500).withEndAction {
+                tvScore.visibility = View.GONE
+                tvScore.alpha = 1f
+            }.start()
         } else {
-            easterEggContainer.visibility = View.GONE
-            hiddenImage.visibility = View.GONE
-            hiddenText.visibility = View.GONE
+            easterEggContainer.animate().alpha(0f).setDuration(500).withEndAction {
+                easterEggContainer.visibility = View.GONE
+                hiddenImage.visibility = View.GONE
+                hiddenText.visibility = View.GONE
+                easterEggContainer.alpha = 1f
+            }.start()
+
+            gameView.alpha = 0f
             gameView.visibility = View.VISIBLE
+            gameView.animate().alpha(1f).setDuration(500).start()
+
+            btnRestart.alpha = 0f
             btnRestart.visibility = View.VISIBLE
+            btnRestart.animate().alpha(1f).setDuration(500).start()
+
+            tvScore.alpha = 0f
             tvScore.visibility = View.VISIBLE
+            tvScore.animate().alpha(1f).setDuration(500).start()
         }
     }
 
+    // 🧩 Konfiguracja zakładek
     private fun setupTabs() {
-        tabLayout.removeAllTabs()
         tabLayout.addTab(tabLayout.newTab().setText("Gra"))
         tabLayout.addTab(tabLayout.newTab().setText("Wyniki"))
         tabLayout.addTab(tabLayout.newTab().setText("Autor"))
+
         showTab("Gra")
+
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when (tab?.position) {
@@ -140,7 +162,7 @@ class MainActivity : AppCompatActivity() {
                 layoutAuthor.visibility = View.GONE
                 btnRestart.visibility = View.GONE
                 tvScore.visibility = View.GONE
-                showScoresTabSafe()
+                showScoresTab()
             }
             "Autor" -> {
                 gameView.visibility = View.GONE
@@ -154,30 +176,23 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Bezpieczna wersja showScoresTab - złapie wyjątki i zaloguje
-    private fun showScoresTabSafe() {
-        try {
-            val raw = loadScoresForToday()
-            val scores = raw.take(10).mapIndexed { index, score -> ScoreItem(index + 1, score) }
-            // zawsze ustaw adapter (nawet pusty) — brak NPE
-            rvScores.adapter = ScoreAdapter(scores)
-            if (scores.isEmpty()) {
-                rvScores.visibility = View.GONE
-                tvNoScores.visibility = View.VISIBLE
-            } else {
-                rvScores.visibility = View.VISIBLE
-                tvNoScores.visibility = View.GONE
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Błąd podczas ładowania wyników: ${e.message}", e)
-            Toast.makeText(this, "Nie udało się załadować wyników (sprawdź logcat).", Toast.LENGTH_LONG).show()
-            // pokaż pustą listę zamiast crasha
-            rvScores.adapter = ScoreAdapter(emptyList())
+    // 📋 Pokazanie listy wyników
+    private fun showScoresTab() {
+        val scores = loadScores().take(10).mapIndexed { index, score -> ScoreItem(index + 1, score) }
+        Log.d("SCORE_DEBUG", "Wyniki do wyświetlenia: $scores")
+
+        if (scores.isEmpty()) {
             rvScores.visibility = View.GONE
             tvNoScores.visibility = View.VISIBLE
+        } else {
+            rvScores.visibility = View.VISIBLE
+            tvNoScores.visibility = View.GONE
+            rvScores.layoutManager = LinearLayoutManager(this)
+            rvScores.adapter = ScoreAdapter(scores)
         }
     }
 
+    // 👉 Obsługa gestów przesuwania
     private fun setupGestures() {
         val gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
             private val SWIPE_THRESHOLD = 100
@@ -187,18 +202,15 @@ class MainActivity : AppCompatActivity() {
                 val diffX = e2.x - e1.x
                 val diffY = e2.y - e1.y
                 var moved = false
-                try {
-                    if (kotlin.math.abs(diffX) > kotlin.math.abs(diffY)) {
-                        if (kotlin.math.abs(diffX) > SWIPE_THRESHOLD && kotlin.math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
-                            moved = if (diffX > 0) manager.moveRight() else manager.moveLeft()
-                        }
-                    } else {
-                        if (kotlin.math.abs(diffY) > SWIPE_THRESHOLD && kotlin.math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
-                            moved = if (diffY > 0) manager.moveDown() else manager.moveUp()
-                        }
+
+                if (kotlin.math.abs(diffX) > kotlin.math.abs(diffY)) {
+                    if (kotlin.math.abs(diffX) > SWIPE_THRESHOLD && kotlin.math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                        moved = if (diffX > 0) manager.moveRight() else manager.moveLeft()
                     }
-                } catch (e: Exception) {
-                    Log.e(TAG, "Błąd gestu: ${e.message}", e)
+                } else {
+                    if (kotlin.math.abs(diffY) > SWIPE_THRESHOLD && kotlin.math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                        moved = if (diffY > 0) manager.moveDown() else manager.moveUp()
+                    }
                 }
 
                 if (moved) {
@@ -217,55 +229,51 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateScoreText() {
-        try {
-            tvScore.text = "Wynik: ${manager.score}"
-        } catch (e: Exception) {
-            Log.e(TAG, "Błąd updateScoreText: ${e.message}", e)
-        }
+        tvScore.text = "Wynik: ${manager.score}"
     }
 
     private fun showGameOverDialog() {
-        try {
-            saveScore()
-            AlertDialog.Builder(this)
-                .setTitle("Koniec gry 😿")
-                .setMessage("Nie ma już możliwych ruchów!")
-                .setPositiveButton("Zacznij od nowa") { _, _ ->
-                    manager.reset()
-                    gameView.drawBoard()
-                    updateScoreText()
-                }
-                .setNegativeButton("Wyjdź z gry") { _, _ -> finish() }
-                .setCancelable(false)
-                .show()
-        } catch (e: Exception) {
-            Log.e(TAG, "Błąd dialogu końca gry: ${e.message}", e)
-        }
+        saveScore()
+        AlertDialog.Builder(this)
+            .setTitle("Koniec gry 😿")
+            .setMessage("Nie ma już możliwych ruchów!")
+            .setPositiveButton("Zacznij od nowa") { _, _ ->
+                manager.reset()
+                gameView.drawBoard()
+                updateScoreText()
+            }
+            .setNegativeButton("Wyjdź z gry") { _, _ -> finish() }
+            .setCancelable(false)
+            .show()
     }
 
+    // 💾 Zapis wyników (trwale)
     private fun saveScore() {
         try {
             val prefs = getSharedPreferences("scores", MODE_PRIVATE)
-            val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-            val allScoresString = prefs.getString(today, "") ?: ""
+            val allScoresString = prefs.getString("all_scores", "") ?: ""
             val scores = allScoresString.split(",").filter { it.isNotEmpty() }.toMutableList()
             scores.add(manager.score.toString())
-            prefs.edit().putString(today, scores.joinToString(",")).apply()
+
+            prefs.edit().putString("all_scores", scores.joinToString(",")).apply()
+            Log.d("SCORE_DEBUG", "Zapisano wynik: ${manager.score}")
+            Log.d("SCORE_DEBUG", "Wszystkie zapisane: ${scores.joinToString(",")}")
         } catch (e: Exception) {
-            Log.e(TAG, "Błąd saveScore: ${e.message}", e)
+            Log.e("SCORE_DEBUG", "Błąd zapisu wyniku: ${e.message}", e)
         }
     }
 
-    private fun loadScoresForToday(): List<Int> {
+    // 📖 Odczyt wyników
+    private fun loadScores(): List<Int> {
         return try {
             val prefs = getSharedPreferences("scores", MODE_PRIVATE)
-            val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-            val allScoresString = prefs.getString(today, "") ?: ""
+            val allScoresString = prefs.getString("all_scores", "") ?: ""
+            Log.d("SCORE_DEBUG", "Odczytano wyniki: $allScoresString")
             allScoresString.split(",")
                 .mapNotNull { it.toIntOrNull() }
                 .sortedDescending()
         } catch (e: Exception) {
-            Log.e(TAG, "Błąd loadScoresForToday: ${e.message}", e)
+            Log.e("SCORE_DEBUG", "Błąd odczytu wyników: ${e.message}", e)
             emptyList()
         }
     }
