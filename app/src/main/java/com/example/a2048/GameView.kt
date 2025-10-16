@@ -1,11 +1,9 @@
 package com.example.a2048
 
-import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
-import android.view.animation.DecelerateInterpolator
 import kotlin.math.min
 
 class GameView @JvmOverloads constructor(
@@ -14,82 +12,61 @@ class GameView @JvmOverloads constructor(
 
     var size = 4
     lateinit var manager: GameManager
-    var isAnimating = false
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val rect = RectF()
-    private val cornerRadius = 16f
+    private val cornerRadius = 24f
     private var tileSize = 0f
     private var gap = 16f
-    private lateinit var tileOffsets: Array<Array<PointF>>
-
-    // Bitmapy kotów wczytane z zasobów
-    private val catBitmapsOriginal = mutableMapOf<Int, Bitmap>()
-    private val catBitmapsScaled = mutableMapOf<Int, Bitmap>()
 
     fun init(manager: GameManager) {
         this.manager = manager
         this.size = manager.size
-        tileOffsets = Array(size) { Array(size) { PointF(0f, 0f) } }
-        loadCatBitmaps()
         invalidate()
-    }
-
-    private fun loadCatBitmaps() {
-        val ids = listOf(2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048)
-        ids.forEach { value ->
-            val resId = resources.getIdentifier("cat$value", "drawable", context.packageName)
-            if (resId != 0) {
-                val bmp = BitmapFactory.decodeResource(resources, resId)
-                catBitmapsOriginal[value] = bmp
-            }
-        }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
+        // Dobieramy tileSize tak, żeby cała plansza mieściła się w mniejszym wymiarze
         tileSize = (min(width, height) - gap * (size + 1)) / size
-
-        // Skalujemy bitmapy kotów proporcjonalnie do tileSize
-        catBitmapsOriginal.forEach { (value, bmp) ->
-            val scale = min(tileSize / bmp.width, tileSize / bmp.height)
-            val w = (bmp.width * scale).toInt()
-            val h = (bmp.height * scale).toInt()
-            catBitmapsScaled[value] = Bitmap.createScaledBitmap(bmp, w, h, true)
-        }
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        // Tło planszy
-        paint.color = Color.parseColor("#BBADA0")
-        canvas.drawRoundRect(0f, 0f, width.toFloat(), height.toFloat(), cornerRadius, cornerRadius, paint)
+        // Obliczamy wymiary planszy w oparciu o tileSize
+        val boardWidth = tileSize * size + gap * (size + 1)
+        val boardHeight = tileSize * size + gap * (size + 1)
+        val offsetX = (width - boardWidth) / 2
+        val offsetY = (height - boardHeight) / 2
 
+        // Tło planszy
+        paint.color = Color.parseColor("#1A1A1A") // ciemniejsze tło
+        rect.set(offsetX, offsetY, offsetX + boardWidth, offsetY + boardHeight)
+        canvas.drawRoundRect(rect, cornerRadius, cornerRadius, paint)
+
+        // Rysowanie kafelków
         for (i in 0 until size) {
             for (j in 0 until size) {
                 val tile = manager.board[i][j]
-                val left = gap + j * (tileSize + gap) + tileOffsets[i][j].x
-                val top = gap + i * (tileSize + gap) + tileOffsets[i][j].y
+                val left = offsetX + gap + j * (tileSize + gap)
+                val top = offsetY + gap + i * (tileSize + gap)
                 rect.set(left, top, left + tileSize, top + tileSize)
 
-                // Tło kafelka
-                paint.color = Color.parseColor("#EEE4DA")
+                paint.color = getTileColor(tile.value)
                 canvas.drawRoundRect(rect, cornerRadius, cornerRadius, paint)
 
-                // Rysowanie kota proporcjonalnie i wycentrowanego
-                val bitmap = catBitmapsScaled[tile.value]
-                bitmap?.let {
-                    val offsetX = left + (tileSize - it.width) / 2
-                    val offsetY = top + (tileSize - it.height) / 2
-                    canvas.drawBitmap(it, offsetX, offsetY, paint)
-                }
-
-                // Numer kafelka
                 if (tile.value != 0) {
-                    paint.color = Color.BLACK
-                    paint.textSize = tileSize / 3
+                    paint.color = Color.WHITE
                     paint.textAlign = Paint.Align.CENTER
+
+                    // Automatyczne skalowanie tekstu
+                    paint.textSize = when {
+                        tile.value < 1024 -> tileSize / 2.5f
+                        tile.value < 16384 -> tileSize / 3f
+                        else -> tileSize / 3.5f
+                    }
+
                     val x = left + tileSize / 2
                     val y = top + tileSize / 2 - (paint.descent() + paint.ascent()) / 2
                     canvas.drawText(tile.value.toString(), x, y, paint)
@@ -98,41 +75,28 @@ class GameView @JvmOverloads constructor(
         }
     }
 
-    // Prosta animacja przesunięcia jednego kafelka
-    fun animateTileMovement(fromI: Int, fromJ: Int, toI: Int, toJ: Int, onEnd: (() -> Unit)? = null) {
-        isAnimating = true
-        val startX = (fromJ - toJ) * (tileSize + gap)
-        val startY = (fromI - toI) * (tileSize + gap)
-        tileOffsets[fromI][fromJ].x = startX
-        tileOffsets[fromI][fromJ].y = startY
-
-        val animator = ValueAnimator.ofFloat(1f, 0f)
-        animator.duration = 150
-        animator.interpolator = DecelerateInterpolator()
-        animator.addUpdateListener { anim ->
-            val fraction = anim.animatedValue as Float
-            tileOffsets[fromI][fromJ].x = startX * fraction
-            tileOffsets[fromI][fromJ].y = startY * fraction
-            invalidate()
+    private fun getTileColor(value: Int): Int {
+        return when (value) {
+            0 -> Color.parseColor("#3A3A3A")       // puste kafelki
+            2 -> Color.parseColor("#d597f0")
+            4 -> Color.parseColor("#b547e6")
+            8 -> Color.parseColor("#9f22d6")
+            16 -> Color.parseColor("#6b0d94")
+            32 -> Color.parseColor("#4f086e")
+            64 -> Color.parseColor("#2e0540")
+            128 -> Color.parseColor("#16021f")
+            256 -> Color.parseColor("#862ef2")
+            512 -> Color.parseColor("#720cf0")
+            1024 -> Color.parseColor("#6811d4")
+            2048 -> Color.parseColor("#3e1470")
+            4096 -> Color.parseColor("#270a4a")
+            8192 -> Color.parseColor("#150529")
+            16384 -> Color.parseColor("#0b0314")
+            else -> Color.parseColor("#000000")  // wartości większe niż 16384
         }
+    }
 
-        animator.addListener(object : android.animation.Animator.AnimatorListener {
-            override fun onAnimationStart(animation: android.animation.Animator) {}
-            override fun onAnimationEnd(animation: android.animation.Animator) {
-                tileOffsets[fromI][fromJ].x = 0f
-                tileOffsets[fromI][fromJ].y = 0f
-                isAnimating = false
-                onEnd?.invoke()
-            }
-
-            override fun onAnimationCancel(animation: android.animation.Animator) {
-                tileOffsets[fromI][fromJ].x = 0f
-                tileOffsets[fromI][fromJ].y = 0f
-                isAnimating = false
-            }
-
-            override fun onAnimationRepeat(animation: android.animation.Animator) {}
-        })
-        animator.start()
+    fun drawBoard() {
+        invalidate()
     }
 }
