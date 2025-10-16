@@ -251,18 +251,21 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun loadScoresForToday(): List<Int> {
-        val prefs = getSharedPreferences("scores", MODE_PRIVATE)
-        val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-        val allScores = prefs.getStringSet(today, emptySet()) ?: emptySet()
-        return allScores.mapNotNull { it.toIntOrNull() }.sortedDescending()
-    }
-
     private fun saveScore() {
         val prefs = getSharedPreferences("scores", MODE_PRIVATE)
         val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-        val scoresSet = prefs.getStringSet(today, emptySet())?.toMutableSet() ?: mutableSetOf()
-        scoresSet.add(manager.score.toString())
-        prefs.edit().putStringSet(today, scoresSet).apply()
+        val allScoresString = prefs.getString(today, "") ?: ""
+        val scores = allScoresString.split(",").filter { it.isNotEmpty() }.toMutableList()
+        scores.add(manager.score.toString())
+        prefs.edit().putString(today, scores.joinToString(",")).apply()
+    }
+
+    private fun loadScoresForToday(): List<Int> {
+        val prefs = getSharedPreferences("scores", MODE_PRIVATE)
+        val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        val allScoresString = prefs.getString(today, "") ?: ""
+        return allScoresString.split(",")
+            .mapNotNull { it.toIntOrNull() }
+            .sortedDescending()
     }
 }
