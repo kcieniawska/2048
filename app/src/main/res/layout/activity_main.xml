@@ -37,7 +37,7 @@
         android:layout_weight="1"
         android:padding="16dp"/>
 
-    <!-- Kontener Easter Egga (napis nad zdjęciem) -->
+    <!-- Kontener Easter Egga -->
     <LinearLayout
         android:id="@+id/easterEggContainer"
         android:orientation="vertical"
@@ -98,10 +98,22 @@
             android:orientation="vertical"
             android:visibility="gone">
 
+            <TextView
+                android:id="@+id/tvNoScores"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Brak wyników"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:visibility="gone"
+                android:padding="16dp"/>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvScores"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:padding="8dp"
                 android:clipToPadding="false"/>
         </LinearLayout>
@@ -115,7 +127,6 @@
             android:padding="16dp"
             android:visibility="gone">
 
-            <!-- Wersja i aktualizacja -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -132,7 +143,6 @@
                 android:textSize="16sp"
                 android:paddingBottom="16dp"/>
 
-            <!-- Autor i wynik -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -141,7 +151,6 @@
                 android:textSize="18sp"
                 android:paddingBottom="8dp"/>
 
-            <!-- Opis aplikacji -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

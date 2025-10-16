@@ -25,8 +25,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tabLayout: TabLayout
     private lateinit var rvScores: RecyclerView
     private lateinit var layoutAuthor: LinearLayout
+    private lateinit var tvNoScores: TextView
 
-    // Easter Egg
     private lateinit var easterEggContainer: LinearLayout
     private lateinit var hiddenImage: ImageView
     private lateinit var hiddenText: TextView
@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         tabLayout = findViewById(R.id.tabLayout)
         rvScores = findViewById(R.id.rvScores)
         layoutAuthor = findViewById(R.id.layoutAuthor)
+        tvNoScores = findViewById(R.id.tvNoScores)
         val tvTitle: TextView = findViewById(R.id.tvTitle)
 
         manager = GameManager()
@@ -55,47 +56,33 @@ class MainActivity : AppCompatActivity() {
         setupTabs()
         setupGestures()
 
-        // Restart gry
         btnRestart.setOnClickListener {
             manager.reset()
             gameView.drawBoard()
             updateScoreText()
         }
 
-        // Easter Egg – kliknięcie w tytuł
         tvTitle.setOnClickListener {
             titleClickCount++
-            if (titleClickCount >= 2) { // dwukrotne kliknięcie
+            if (titleClickCount >= 2) {
                 titleClickCount = 0
                 toggleEasterEgg()
             }
         }
     }
 
-    // Funkcja toggleEasterEgg – pokazuje/ukrywa kontener easter egga z animacją
     private fun toggleEasterEgg() {
         if (easterEggContainer.visibility == View.GONE) {
-            // Pokaż kontener
             hiddenImage.visibility = View.VISIBLE
             hiddenText.visibility = View.VISIBLE
-
             easterEggContainer.alpha = 0f
             easterEggContainer.visibility = View.VISIBLE
-            easterEggContainer.animate()
-                .alpha(1f)
-                .setDuration(500)
-                .start()
+            easterEggContainer.animate().alpha(1f).setDuration(500).start()
 
-            // Animacja skalowania obrazka
             hiddenImage.scaleX = 0.5f
             hiddenImage.scaleY = 0.5f
-            hiddenImage.animate()
-                .scaleX(1f)
-                .scaleY(1f)
-                .setDuration(500)
-                .start()
+            hiddenImage.animate().scaleX(1f).scaleY(1f).setDuration(500).start()
 
-            // Ukryj planszę i przyciski
             gameView.animate().alpha(0f).setDuration(500).withEndAction {
                 gameView.visibility = View.GONE
                 gameView.alpha = 1f
@@ -110,20 +97,14 @@ class MainActivity : AppCompatActivity() {
                 tvScore.visibility = View.GONE
                 tvScore.alpha = 1f
             }.start()
-
         } else {
-            // Ukryj kontener easter egga
-            easterEggContainer.animate()
-                .alpha(0f)
-                .setDuration(500)
-                .withEndAction {
-                    easterEggContainer.visibility = View.GONE
-                    hiddenImage.visibility = View.GONE
-                    hiddenText.visibility = View.GONE
-                    easterEggContainer.alpha = 1f
-                }.start()
+            easterEggContainer.animate().alpha(0f).setDuration(500).withEndAction {
+                easterEggContainer.visibility = View.GONE
+                hiddenImage.visibility = View.GONE
+                hiddenText.visibility = View.GONE
+                easterEggContainer.alpha = 1f
+            }.start()
 
-            // Przywróć planszę i przyciski
             gameView.alpha = 0f
             gameView.visibility = View.VISIBLE
             gameView.animate().alpha(1f).setDuration(500).start()
@@ -138,7 +119,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Zakładki
     private fun setupTabs() {
         tabLayout.addTab(tabLayout.newTab().setText("Gra"))
         tabLayout.addTab(tabLayout.newTab().setText("Wyniki"))
@@ -165,6 +145,7 @@ class MainActivity : AppCompatActivity() {
                 gameView.visibility = View.VISIBLE
                 easterEggContainer.visibility = View.GONE
                 rvScores.visibility = View.GONE
+                tvNoScores.visibility = View.GONE
                 layoutAuthor.visibility = View.GONE
                 btnRestart.visibility = View.VISIBLE
                 tvScore.visibility = View.VISIBLE
@@ -172,7 +153,6 @@ class MainActivity : AppCompatActivity() {
             "Wyniki" -> {
                 gameView.visibility = View.GONE
                 easterEggContainer.visibility = View.GONE
-                rvScores.visibility = View.VISIBLE
                 layoutAuthor.visibility = View.GONE
                 btnRestart.visibility = View.GONE
                 tvScore.visibility = View.GONE
@@ -182,6 +162,7 @@ class MainActivity : AppCompatActivity() {
                 gameView.visibility = View.GONE
                 easterEggContainer.visibility = View.GONE
                 rvScores.visibility = View.GONE
+                tvNoScores.visibility = View.GONE
                 layoutAuthor.visibility = View.VISIBLE
                 btnRestart.visibility = View.GONE
                 tvScore.visibility = View.GONE
@@ -190,13 +171,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showScoresTab() {
-        val scores = loadScoresForToday().take(10)
-            .mapIndexed { index, score -> ScoreItem(index + 1, score) }
-        rvScores.layoutManager = LinearLayoutManager(this)
-        rvScores.adapter = ScoreAdapter(scores)
+        val scores = loadScoresForToday().take(10).mapIndexed { index, score ->
+            ScoreItem(index + 1, score)
+        }
+
+        if (scores.isEmpty()) {
+            rvScores.visibility = View.GONE
+            tvNoScores.visibility = View.VISIBLE
+        } else {
+            rvScores.visibility = View.VISIBLE
+            tvNoScores.visibility = View.GONE
+            rvScores.layoutManager = LinearLayoutManager(this)
+            rvScores.adapter = ScoreAdapter(scores)
+        }
     }
 
-    // Gesty do przesuwania
     private fun setupGestures() {
         val gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
             private val SWIPE_THRESHOLD = 100

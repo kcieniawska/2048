@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-data class ScoreItem(val place: Int, val score: Int)
 
 class ScoreAdapter(private val scores: List<ScoreItem>) :
     RecyclerView.Adapter<ScoreAdapter.ScoreViewHolder>() {
