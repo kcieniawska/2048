@@ -290,7 +290,7 @@ class MainActivity : AppCompatActivity() {
                 manager.reset()
                 gameView.drawBoard()
                 updateScoreText()
-                showScoresTab()
+                // showScoresTab()
             }
             .setNegativeButton("Wyjdź z gry") { _, _ -> finish() }
             .setCancelable(false)
