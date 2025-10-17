@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.tabs.TabLayout
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import android.text.Html
+import android.text.method.LinkMovementMethod
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,6 +27,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var layoutScores: LinearLayout
     private lateinit var layoutAuthor: LinearLayout
     private lateinit var tvNoScores: TextView
+
+    private lateinit var btnChangelog: Button
+    private lateinit var scrollChangelog: ScrollView
+    private lateinit var tvChangelog: TextView
 
     private lateinit var easterEggContainer: LinearLayout
     private lateinit var hiddenImage: ImageView
@@ -52,12 +58,18 @@ class MainActivity : AppCompatActivity() {
         tvNoScores = findViewById(R.id.tvNoScores)
         val tvTitle: TextView = findViewById(R.id.tvTitle)
 
+        // Nowe widoki dla changeloga
+        btnChangelog = findViewById(R.id.btnChangelog)
+        scrollChangelog = findViewById(R.id.scrollChangelog)
+        tvChangelog = findViewById(R.id.tvChangelog)
+
         manager = GameManager()
         gameView.init(manager)
 
         updateScoreText()
         setupTabs()
         setupGestures()
+        setupChangelog() // ✅ obsługa przycisku listy zmian
 
         btnRestart.setOnClickListener {
             if (manager.score > 0) saveScore()
@@ -75,6 +87,48 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // ------------------- CHANGLOG -------------------
+    private fun setupChangelog() {
+        val changelogText = """
+<h1>CO NOWEGO?</h1>
+        <p>GitHub: <a href="https://github.com/kcieniawska/2048"> kcieniawska</a></p>
+<br>------------------------------------------------------------------<br>
+        <h3>Wersja 1.2 - 17.10.2025</h3>
+        <ul>
+            <li> Naprawiono zapis wyników</li>
+            <li> Zlikwidowano błędy</li>
+            <li> Dodano przycisk "Co nowego w aplikacji?"</li>
+            <li> Zoptymalizowano animacje gry</li>
+            <li> Dodano prosty Easter Egg</li>
+        </ul>
+<br>------------------------------------------------------------------<br>
+        <h3>Wersja 1.1 - 16.10.2025</h3>
+        <ul>
+            <li> Zlikwidowano błędy</li>
+            <li> Usprawniono rozgrywkę</li>
+            <li> Zmiana wyglądu gry</li>
+        </ul>
+<br>------------------------------------------------------------------<br>
+        <h3>Wersja 1.0 - 16.10.2025</h3>
+        <ul>
+            <li> Pierwsza wersja gry 2048</li>
+        </ul>
+""".trimIndent()
+
+        tvChangelog.text = changelogText
+        tvChangelog.text = changelogText
+        tvChangelog.text = Html.fromHtml(changelogText, Html.FROM_HTML_MODE_LEGACY)
+        tvChangelog.movementMethod = LinkMovementMethod.getInstance()
+        // Ustawienia scrolla
+        scrollChangelog.isVerticalScrollBarEnabled = true
+        scrollChangelog.isScrollbarFadingEnabled = false
+        btnChangelog.setOnClickListener {
+            scrollChangelog.visibility =
+                if (scrollChangelog.visibility == View.GONE) View.VISIBLE else View.GONE
+        }
+    }
+
+    // ------------------- GRA -------------------
     private fun toggleEasterEgg() {
         if (easterEggContainer.visibility == View.GONE) {
             easterEggContainer.visibility = View.VISIBLE
@@ -145,7 +199,6 @@ class MainActivity : AppCompatActivity() {
                 btnRestart.visibility = View.VISIBLE
                 tvScore.visibility = View.VISIBLE
             }
-
             "Wyniki" -> {
                 gameView.visibility = View.GONE
                 easterEggContainer.visibility = View.GONE
@@ -154,13 +207,13 @@ class MainActivity : AppCompatActivity() {
                 tvScore.visibility = View.GONE
                 showScoresTab()
             }
-
             "Autor" -> {
                 gameView.visibility = View.GONE
                 easterEggContainer.visibility = View.GONE
                 layoutScores.visibility = View.GONE
                 tvNoScores.visibility = View.GONE
                 layoutAuthor.visibility = View.VISIBLE
+                scrollChangelog.visibility = View.GONE // ukryj changelog przy wejściu
                 btnRestart.visibility = View.GONE
                 tvScore.visibility = View.GONE
             }
@@ -237,7 +290,7 @@ class MainActivity : AppCompatActivity() {
                 manager.reset()
                 gameView.drawBoard()
                 updateScoreText()
-                showScoresTab() // odświeżamy wyniki
+                showScoresTab()
             }
             .setNegativeButton("Wyjdź z gry") { _, _ -> finish() }
             .setCancelable(false)

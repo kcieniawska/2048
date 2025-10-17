@@ -73,18 +73,18 @@
             android:contentDescription="Ukryte zdjęcie"/>
     </LinearLayout>
 
-    <!-- Kontener na zawartość zakładek -->
+    <!-- Kontener na zakładki -->
     <FrameLayout
         android:id="@+id/tabContent"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp">
 
         <!-- Layout wyników -->
         <LinearLayout
             android:id="@+id/layoutScores"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:visibility="gone">
 
@@ -113,7 +113,7 @@
             android:id="@+id/layoutAuthor"
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:padding="16dp"
             android:visibility="gone">
 
@@ -146,11 +146,42 @@
                 android:layout_height="wrap_content"
                 android:text="Aplikacja wykonana na przedmiot &quot;Aplikacje mobilne&quot; na Akademię Nauk Stosowanych w Nowym Targu"
                 android:textColor="#FFFFFF"
-                android:textSize="16sp"/>
+                android:textSize="16sp"
+                android:paddingBottom="16dp"/>
+
+            <!-- Przycisk listy zmian -->
+            <Button
+                android:id="@+id/btnChangelog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Co nowego w aplikacji?"
+                android:backgroundTint="#555555"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="8dp"/>
+
+            <!-- ScrollView z changelogiem -->
+            <ScrollView
+    android:id="@+id/scrollChangelog"
+    android:layout_width="match_parent"
+    android:layout_height="300dp"
+    android:visibility="gone"
+    android:fillViewport="true"
+    android:scrollbars="vertical"
+    android:layout_marginTop="4dp">
+
+    <TextView
+        android:id="@+id/tvChangelog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:padding="8dp"/>
+</ScrollView>
+
         </LinearLayout>
+
     </FrameLayout>
 
-    <!-- ✅ Przycisk przeniesiony tu, nad TabLayout -->
+    <!-- Przycisk restartu -->
     <Button
         android:id="@+id/btnRestart"
         android:layout_width="match_parent"
@@ -161,9 +192,9 @@
         android:padding="12dp"
         android:text="Zacznij od nowa"
         android:textColor="#FFFFFF"
-        android:textAllCaps="false" />
+        android:textAllCaps="false"/>
 
-    <!-- Zakładki na dole -->
+    <!-- Zakładki -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
