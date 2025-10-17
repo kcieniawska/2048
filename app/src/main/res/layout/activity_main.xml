@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
@@ -71,17 +72,6 @@
             android:src="@drawable/easter_egg_image"
             android:contentDescription="Ukryte zdjęcie"/>
     </LinearLayout>
-
-    <!-- Przycisk startu od nowa -->
-    <Button
-        android:id="@+id/btnRestart"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Zacznij od nowa"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="#D84315"
-        android:padding="12dp"
-        android:layout_marginTop="8dp"/>
 
     <!-- Kontener na zawartość zakładek -->
     <FrameLayout
@@ -159,6 +149,19 @@
                 android:textSize="16sp"/>
         </LinearLayout>
     </FrameLayout>
+
+    <!-- ✅ Przycisk przeniesiony tu, nad TabLayout -->
+    <Button
+        android:id="@+id/btnRestart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="4dp"
+        android:backgroundTint="#D84315"
+        android:padding="12dp"
+        android:text="Zacznij od nowa"
+        android:textColor="#FFFFFF"
+        android:textAllCaps="false" />
 
     <!-- Zakładki na dole -->
     <com.google.android.material.tabs.TabLayout
