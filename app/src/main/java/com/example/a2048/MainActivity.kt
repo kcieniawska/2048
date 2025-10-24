@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity() {
             <li> Zmiana wyglądu gry</li>
         </ul>
 <br>------------------------------------------------------------------<br>
-        <h3>Wersja 1.0 - 16.10.2025</h3>
+        <h3>Wersja 1.0</h3>
         <ul>
             <li> Pierwsza wersja gry 2048</li>
         </ul>
