@@ -120,7 +120,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Wersja 1.2"
+                android:text="Wersja 1.3"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp"
                 android:paddingBottom="4dp"/>
@@ -128,7 +128,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Ostatnia aktualizacja: 17.10.2025"
+                android:text="Ostatnia aktualizacja: 24.10.2025"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp"
                 android:paddingBottom="16dp"/>

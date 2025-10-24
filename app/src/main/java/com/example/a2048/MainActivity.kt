@@ -92,13 +92,20 @@ class MainActivity : AppCompatActivity() {
         val changelogText = """
 <h1>CO NOWEGO?</h1>
         <p>GitHub: <a href="https://github.com/kcieniawska/2048"> kcieniawska</a></p>
+        <br>------------------------------------------------------------------<br>
+        <h3>Wersja 1.3 - 24.10.2025</h3>
+        <ul>
+            <li> Zlikwidowano błędy</li>
+            <li> Zoptymalizowano i naprawiono animacje gry</li>
+            <li> Zmieniono zasade gry: Maksymalna liczba to 2048, a nie jak wczesniej</li>
+        </ul>
+<br>------------------------------------------------------------------<br>
 <br>------------------------------------------------------------------<br>
         <h3>Wersja 1.2 - 17.10.2025</h3>
         <ul>
             <li> Naprawiono zapis wyników</li>
             <li> Zlikwidowano błędy</li>
             <li> Dodano przycisk "Co nowego w aplikacji?"</li>
-            <li> Zoptymalizowano animacje gry</li>
             <li> Dodano prosty Easter Egg</li>
         </ul>
 <br>------------------------------------------------------------------<br>
