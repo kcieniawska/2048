@@ -282,6 +282,8 @@ class MainActivity : AppCompatActivity() {
         <br>------------------------------------------------------------------<br>
         <h3>Wersja 1.4 - 29.10.2025</h3>
         <ul>
+            <li>Dodano możliwość cofania ruchów</li>
+            <li>Usprawniono rozgrywke</li>
             <li>Dodano animację dla zdobytego kafelka 2048</li>
             <li>Komunikaty uzyskały nowy kolor</li>
         </ul>
@@ -306,7 +308,6 @@ class MainActivity : AppCompatActivity() {
             <li> Zlikwidowano błędy</li>
             <li> Usprawniono rozgrywkę</li>
             <li> Zmiana wyglądu gry</li>
-            <li> ...inne zmiany...</li>
         </ul>
 <br>------------------------------------------------------------------<br>
         <h3>Wersja 1.0</h3>
