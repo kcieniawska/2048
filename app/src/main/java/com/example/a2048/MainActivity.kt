@@ -278,7 +278,6 @@ class MainActivity : AppCompatActivity() {
         val changelogText = """
 <h1>CO NOWEGO?</h1>
         <p>GitHub: <a href="https://github.com/kcieniawska/2048"> kcieniawska</a></p>
-        <p>Discord: <a href="https://discord.gg/PF3wAaVhEP"> 2048</a></p>
         <br>------------------------------------------------------------------<br>
         <h3>Wersja 1.4 - 29.10.2025</h3>
         <ul>
