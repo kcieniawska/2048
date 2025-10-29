@@ -16,6 +16,7 @@ import com.google.gson.reflect.TypeToken
 import android.text.Html
 import android.text.method.LinkMovementMethod
 import kotlin.math.abs
+import android.os.Build // Dodany import dla Build.VERSION.SDK_INT
 
 class MainActivity : AppCompatActivity() {
 
@@ -39,7 +40,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var hiddenImage: ImageView
     private lateinit var hiddenText: TextView
     private var titleClickCount = 0
-    // USUNIĘTO: private var scoreClickCount = 0 (zostało usunięte w poprzednim kroku)
 
     private val PREFS_NAME = "scores_prefs"
     private val KEY_SCORES = "scores_json"
@@ -76,7 +76,6 @@ class MainActivity : AppCompatActivity() {
         setupGestures()
         setupChangelog()
         setupTitleClick(tvTitle)
-        // USUNIĘTO: setupScoreClick() (zostało usunięte w poprzednim kroku)
 
         // --- OBSŁUGA PRZYCISKÓW ---
         btnRestart.setOnClickListener {
@@ -274,6 +273,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // START POPRAWIONEJ FUNKCJI DLA KOMPATYBILNOŚCI WSTECZNEJ (API < 24)
     private fun setupChangelog() {
         val changelogText = """
 <h1>CO NOWEGO?</h1>
@@ -315,7 +315,17 @@ class MainActivity : AppCompatActivity() {
         </ul>
 """.trimIndent()
 
-        tvChangelog.text = Html.fromHtml(changelogText, Html.FROM_HTML_MODE_LEGACY)
+        // POPRAWKA BŁĘDU: Warunkowe użycie metody fromHtml dla API >= 24 i API < 24
+        val styledText = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // API 24 (Nougat) i nowsze: używamy nowej, bezpiecznej metody
+            Html.fromHtml(changelogText, Html.FROM_HTML_MODE_LEGACY)
+        } else {
+            // API 23 i starsze: używamy starej, przestarzałej, ale koniecznej metody
+            @Suppress("DEPRECATION")
+            Html.fromHtml(changelogText)
+        }
+
+        tvChangelog.text = styledText
         tvChangelog.movementMethod = LinkMovementMethod.getInstance()
         scrollChangelog.isVerticalScrollBarEnabled = true
         scrollChangelog.isScrollbarFadingEnabled = false
@@ -324,6 +334,7 @@ class MainActivity : AppCompatActivity() {
                 if (scrollChangelog.visibility == View.GONE) View.VISIBLE else View.GONE
         }
     }
+    // KONIEC POPRAWIONEJ FUNKCJI
 
     private fun toggleEasterEgg() {
         if (easterEggContainer.visibility == View.GONE) {
