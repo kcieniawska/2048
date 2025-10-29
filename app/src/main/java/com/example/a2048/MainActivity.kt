@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var hiddenImage: ImageView
     private lateinit var hiddenText: TextView
     private var titleClickCount = 0
-    // USUNIĘTO: private var scoreClickCount = 0
+    // USUNIĘTO: private var scoreClickCount = 0 (zostało usunięte w poprzednim kroku)
 
     private val PREFS_NAME = "scores_prefs"
     private val KEY_SCORES = "scores_json"
@@ -76,10 +76,7 @@ class MainActivity : AppCompatActivity() {
         setupGestures()
         setupChangelog()
         setupTitleClick(tvTitle)
-        // USUNIĘTO: setupScoreClick() - niepotrzebne bez trybu testowego
-
-        // Upewnienie się, że TextView nie ma już żadnego nasłuchu dla testów
-        tvScore.setOnClickListener(null)
+        // USUNIĘTO: setupScoreClick() (zostało usunięte w poprzednim kroku)
 
         // --- OBSŁUGA PRZYCISKÓW ---
         btnRestart.setOnClickListener {
@@ -104,6 +101,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Funkcja aktywująca Easter Egg po dwukrotnym kliknięciu w tytuł
     private fun setupTitleClick(tvTitle: TextView) {
         tvTitle.setOnClickListener {
             titleClickCount++
@@ -164,14 +162,16 @@ class MainActivity : AppCompatActivity() {
         tvScore.text = "Wynik: ${manager.score}"
     }
 
+    // Używamy pełnej ścieżki do stylu: androidx.appcompat.R.style.Theme_AppCompat_Dialog_Alert
     private fun show2048ReachedDialog() {
         // Reset flag 2048, używamy refleksji, bo pole jest private set
+        // Dzięki temu dialog pojawi się tylko raz
         manager.javaClass.getDeclaredField("reached2048").apply {
             isAccessible = true
             setBoolean(manager, false)
         }
 
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(this, androidx.appcompat.R.style.Theme_AppCompat_Dialog_Alert)
             .setTitle("🥳 GRATULACJE! 🥳")
             .setMessage("Dotarłeś do 2048! Lecimy dalej?")
             .setPositiveButton("KONTUNUUJ") { _, _ ->
@@ -184,10 +184,11 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
+    // Używamy pełnej ścieżki do stylu: androidx.appcompat.R.style.Theme_AppCompat_Dialog_Alert
     private fun showGameOverDialog() {
         if (manager.score > 0) saveScore()
 
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(this, androidx.appcompat.R.style.Theme_AppCompat_Dialog_Alert)
             .setTitle("Koniec gry 😿")
             .setMessage("Nie ma już możliwych ruchów! Twój wynik: ${manager.score}")
             .setPositiveButton("Zacznij od nowa") { _, _ ->
@@ -277,6 +278,13 @@ class MainActivity : AppCompatActivity() {
         val changelogText = """
 <h1>CO NOWEGO?</h1>
         <p>GitHub: <a href="https://github.com/kcieniawska/2048"> kcieniawska</a></p>
+        <p>Discord: <a href="https://discord.gg/PF3wAaVhEP"> 2048</a></p>
+        <br>------------------------------------------------------------------<br>
+        <h3>Wersja 1.4 - 29.10.2025</h3>
+        <ul>
+            <li>Dodano animację dla zdobytego kafelka 2048</li>
+            <li>Komunikaty uzyskały nowy kolor</li>
+        </ul>
         <br>------------------------------------------------------------------<br>
         <h3>Wersja 1.3 - 24.10.2025</h3>
         <ul>
@@ -284,7 +292,6 @@ class MainActivity : AppCompatActivity() {
             <li> Zoptymalizowano i naprawiono animacje gry</li>
             <li> Zmieniono zasade gry: Maksymalna liczba to 2048, a nie jak wczesniej</li>
         </ul>
-<br>------------------------------------------------------------------<br>
 <br>------------------------------------------------------------------<br>
         <h3>Wersja 1.2 - 17.10.2025</h3>
         <ul>
