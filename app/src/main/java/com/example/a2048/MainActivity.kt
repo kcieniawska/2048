@@ -15,6 +15,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import android.text.Html
 import android.text.method.LinkMovementMethod
+import kotlin.math.abs
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,10 +33,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var scrollChangelog: ScrollView
     private lateinit var tvChangelog: TextView
 
+    private lateinit var btnUndo: Button
+
     private lateinit var easterEggContainer: LinearLayout
     private lateinit var hiddenImage: ImageView
     private lateinit var hiddenText: TextView
     private var titleClickCount = 0
+    // USUNIĘTO: private var scoreClickCount = 0
 
     private val PREFS_NAME = "scores_prefs"
     private val KEY_SCORES = "scores_json"
@@ -46,22 +50,23 @@ class MainActivity : AppCompatActivity() {
 
         // Inicjalizacja widoków
         gameView = findViewById(R.id.gameView)
-        easterEggContainer = findViewById(R.id.easterEggContainer)
-        hiddenImage = findViewById(R.id.hiddenImage)
-        hiddenText = findViewById(R.id.hiddenText)
-        btnRestart = findViewById(R.id.btnRestart)
         tvScore = findViewById(R.id.tvScore)
+        btnRestart = findViewById(R.id.btnRestart)
+        btnUndo = findViewById(R.id.btnUndo)
         tabLayout = findViewById(R.id.tabLayout)
         rvScores = findViewById(R.id.rvScores)
         layoutScores = findViewById(R.id.layoutScores)
         layoutAuthor = findViewById(R.id.layoutAuthor)
         tvNoScores = findViewById(R.id.tvNoScores)
-        val tvTitle: TextView = findViewById(R.id.tvTitle)
-
-        // Nowe widoki dla changeloga
         btnChangelog = findViewById(R.id.btnChangelog)
         scrollChangelog = findViewById(R.id.scrollChangelog)
         tvChangelog = findViewById(R.id.tvChangelog)
+        easterEggContainer = findViewById(R.id.easterEggContainer)
+        hiddenImage = findViewById(R.id.hiddenImage)
+        hiddenText = findViewById(R.id.hiddenText)
+        val tvTitle: TextView = findViewById(R.id.tvTitle)
+
+        btnUndo.isEnabled = false
 
         manager = GameManager()
         gameView.init(manager)
@@ -69,15 +74,37 @@ class MainActivity : AppCompatActivity() {
         updateScoreText()
         setupTabs()
         setupGestures()
-        setupChangelog() // ✅ obsługa przycisku listy zmian
+        setupChangelog()
+        setupTitleClick(tvTitle)
+        // USUNIĘTO: setupScoreClick() - niepotrzebne bez trybu testowego
 
+        // Upewnienie się, że TextView nie ma już żadnego nasłuchu dla testów
+        tvScore.setOnClickListener(null)
+
+        // --- OBSŁUGA PRZYCISKÓW ---
         btnRestart.setOnClickListener {
             if (manager.score > 0) saveScore()
             manager.reset()
             gameView.drawBoard()
             updateScoreText()
+            btnUndo.isEnabled = false
+            showTab("Gra")
         }
 
+        // === OBSŁUGA COFANIA RUCHU ===
+        btnUndo.setOnClickListener {
+            if (manager.undo()) {
+                gameView.drawBoard()
+                updateScoreText()
+                btnUndo.isEnabled = false
+                Toast.makeText(this, "Ruch cofnięty!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Nie ma już ruchów do cofnięcia!", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun setupTitleClick(tvTitle: TextView) {
         tvTitle.setOnClickListener {
             titleClickCount++
             if (titleClickCount >= 2) {
@@ -87,7 +114,165 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // ------------------- CHANGLOG -------------------
+    private fun setupGestures() {
+        val gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
+            private val SWIPE_THRESHOLD = 100
+            private val SWIPE_VELOCITY_THRESHOLD = 100
+
+            override fun onFling(
+                e1: MotionEvent,
+                e2: MotionEvent,
+                velocityX: Float,
+                velocityY: Float
+            ): Boolean {
+                val diffX = e2.x - e1.x
+                val diffY = e2.y - e1.y
+                var moved = false
+
+                if (abs(diffX) > abs(diffY)) {
+                    if (abs(diffX) > SWIPE_THRESHOLD && abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                        moved = if (diffX > 0) manager.moveRight() else manager.moveLeft()
+                    }
+                } else {
+                    if (abs(diffY) > SWIPE_THRESHOLD && abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                        moved = if (diffY > 0) manager.moveDown() else manager.moveUp()
+                    }
+                }
+
+                if (moved) {
+                    gameView.drawBoard()
+                    updateScoreText()
+                    btnUndo.isEnabled = true
+
+                    if (manager.reached2048) {
+                        show2048ReachedDialog()
+                    }
+
+                    if (manager.isGameOver()) showGameOverDialog()
+                }
+                return true
+            }
+        })
+
+        gameView.setOnTouchListener { _, event ->
+            gestureDetector.onTouchEvent(event)
+            true
+        }
+    }
+
+    private fun updateScoreText() {
+        tvScore.text = "Wynik: ${manager.score}"
+    }
+
+    private fun show2048ReachedDialog() {
+        // Reset flag 2048, używamy refleksji, bo pole jest private set
+        manager.javaClass.getDeclaredField("reached2048").apply {
+            isAccessible = true
+            setBoolean(manager, false)
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("🥳 GRATULACJE! 🥳")
+            .setMessage("Dotarłeś do 2048! Lecimy dalej?")
+            .setPositiveButton("KONTUNUUJ") { _, _ ->
+                // Kontynuacja gry
+            }
+            .setNegativeButton("Zakończ grę") { _, _ ->
+                showGameOverDialog()
+            }
+            .setCancelable(false)
+            .show()
+    }
+
+    private fun showGameOverDialog() {
+        if (manager.score > 0) saveScore()
+
+        AlertDialog.Builder(this)
+            .setTitle("Koniec gry 😿")
+            .setMessage("Nie ma już możliwych ruchów! Twój wynik: ${manager.score}")
+            .setPositiveButton("Zacznij od nowa") { _, _ ->
+                manager.reset()
+                gameView.drawBoard()
+                updateScoreText()
+                btnUndo.isEnabled = false
+                showTab("Gra")
+            }
+            .setNegativeButton("Wyjdź z gry") { _, _ -> finish() }
+            .setCancelable(false)
+            .show()
+    }
+
+    private fun setupTabs() {
+        tabLayout.addTab(tabLayout.newTab().setText("Gra"))
+        tabLayout.addTab(tabLayout.newTab().setText("Wyniki"))
+        tabLayout.addTab(tabLayout.newTab().setText("Autor"))
+
+        showTab("Gra")
+
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                when (tab?.position) {
+                    0 -> showTab("Gra")
+                    1 -> showTab("Wyniki")
+                    2 -> showTab("Autor")
+                }
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
+    }
+
+    private fun showTab(name: String) {
+        when (name) {
+            "Gra" -> {
+                gameView.visibility = View.VISIBLE
+                easterEggContainer.visibility = View.GONE
+                layoutScores.visibility = View.GONE
+                tvNoScores.visibility = View.GONE
+                layoutAuthor.visibility = View.GONE
+                btnRestart.visibility = View.VISIBLE
+                tvScore.visibility = View.VISIBLE
+                btnUndo.visibility = View.VISIBLE
+            }
+            "Wyniki" -> {
+                gameView.visibility = View.GONE
+                easterEggContainer.visibility = View.GONE
+                layoutAuthor.visibility = View.GONE
+                btnRestart.visibility = View.GONE
+                tvScore.visibility = View.GONE
+                btnUndo.visibility = View.GONE
+                showScoresTab()
+            }
+            "Autor" -> {
+                gameView.visibility = View.GONE
+                easterEggContainer.visibility = View.GONE
+                layoutScores.visibility = View.GONE
+                tvNoScores.visibility = View.GONE
+                layoutAuthor.visibility = View.VISIBLE
+                scrollChangelog.visibility = View.GONE
+                btnRestart.visibility = View.GONE
+                tvScore.visibility = View.GONE
+                btnUndo.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun showScoresTab() {
+        val scores = loadScores()
+            .sortedByDescending { it.score }
+            .mapIndexed { index, stored -> ScoreItem(index + 1, stored.score) }
+
+        if (scores.isEmpty()) {
+            layoutScores.visibility = View.GONE
+            tvNoScores.visibility = View.VISIBLE
+        } else {
+            layoutScores.visibility = View.VISIBLE
+            tvNoScores.visibility = View.GONE
+            rvScores.layoutManager = LinearLayoutManager(this)
+            rvScores.adapter = ScoreAdapter(scores)
+        }
+    }
+
     private fun setupChangelog() {
         val changelogText = """
 <h1>CO NOWEGO?</h1>
@@ -114,6 +299,7 @@ class MainActivity : AppCompatActivity() {
             <li> Zlikwidowano błędy</li>
             <li> Usprawniono rozgrywkę</li>
             <li> Zmiana wyglądu gry</li>
+            <li> ...inne zmiany...</li>
         </ul>
 <br>------------------------------------------------------------------<br>
         <h3>Wersja 1.0</h3>
@@ -122,11 +308,8 @@ class MainActivity : AppCompatActivity() {
         </ul>
 """.trimIndent()
 
-        tvChangelog.text = changelogText
-        tvChangelog.text = changelogText
         tvChangelog.text = Html.fromHtml(changelogText, Html.FROM_HTML_MODE_LEGACY)
         tvChangelog.movementMethod = LinkMovementMethod.getInstance()
-        // Ustawienia scrolla
         scrollChangelog.isVerticalScrollBarEnabled = true
         scrollChangelog.isScrollbarFadingEnabled = false
         btnChangelog.setOnClickListener {
@@ -135,7 +318,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // ------------------- GRA -------------------
     private fun toggleEasterEgg() {
         if (easterEggContainer.visibility == View.GONE) {
             easterEggContainer.visibility = View.VISIBLE
@@ -174,136 +356,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupTabs() {
-        tabLayout.addTab(tabLayout.newTab().setText("Gra"))
-        tabLayout.addTab(tabLayout.newTab().setText("Wyniki"))
-        tabLayout.addTab(tabLayout.newTab().setText("Autor"))
-
-        showTab("Gra")
-
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                when (tab?.position) {
-                    0 -> showTab("Gra")
-                    1 -> showTab("Wyniki")
-                    2 -> showTab("Autor")
-                }
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
-        })
-    }
-
-    private fun showTab(name: String) {
-        when (name) {
-            "Gra" -> {
-                gameView.visibility = View.VISIBLE
-                easterEggContainer.visibility = View.GONE
-                layoutScores.visibility = View.GONE
-                tvNoScores.visibility = View.GONE
-                layoutAuthor.visibility = View.GONE
-                btnRestart.visibility = View.VISIBLE
-                tvScore.visibility = View.VISIBLE
-            }
-            "Wyniki" -> {
-                gameView.visibility = View.GONE
-                easterEggContainer.visibility = View.GONE
-                layoutAuthor.visibility = View.GONE
-                btnRestart.visibility = View.GONE
-                tvScore.visibility = View.GONE
-                showScoresTab()
-            }
-            "Autor" -> {
-                gameView.visibility = View.GONE
-                easterEggContainer.visibility = View.GONE
-                layoutScores.visibility = View.GONE
-                tvNoScores.visibility = View.GONE
-                layoutAuthor.visibility = View.VISIBLE
-                scrollChangelog.visibility = View.GONE // ukryj changelog przy wejściu
-                btnRestart.visibility = View.GONE
-                tvScore.visibility = View.GONE
-            }
-        }
-    }
-
-    private fun showScoresTab() {
-        val scores = loadScores()
-            .sortedByDescending { it.score }
-            .mapIndexed { index, stored -> ScoreItem(index + 1, stored.score) }
-
-        if (scores.isEmpty()) {
-            layoutScores.visibility = View.GONE
-            tvNoScores.visibility = View.VISIBLE
-        } else {
-            layoutScores.visibility = View.VISIBLE
-            tvNoScores.visibility = View.GONE
-            rvScores.layoutManager = LinearLayoutManager(this)
-            rvScores.adapter = ScoreAdapter(scores)
-        }
-    }
-
-    private fun setupGestures() {
-        val gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
-            private val SWIPE_THRESHOLD = 100
-            private val SWIPE_VELOCITY_THRESHOLD = 100
-
-            override fun onFling(
-                e1: MotionEvent,
-                e2: MotionEvent,
-                velocityX: Float,
-                velocityY: Float
-            ): Boolean {
-                val diffX = e2.x - e1.x
-                val diffY = e2.y - e1.y
-                var moved = false
-
-                if (kotlin.math.abs(diffX) > kotlin.math.abs(diffY)) {
-                    if (kotlin.math.abs(diffX) > SWIPE_THRESHOLD && kotlin.math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
-                        moved = if (diffX > 0) manager.moveRight() else manager.moveLeft()
-                    }
-                } else {
-                    if (kotlin.math.abs(diffY) > SWIPE_THRESHOLD && kotlin.math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
-                        moved = if (diffY > 0) manager.moveDown() else manager.moveUp()
-                    }
-                }
-
-                if (moved) {
-                    gameView.drawBoard()
-                    updateScoreText()
-                    if (manager.isGameOver()) showGameOverDialog()
-                }
-                return true
-            }
-        })
-
-        gameView.setOnTouchListener { _, event ->
-            gestureDetector.onTouchEvent(event)
-            true
-        }
-    }
-
-    private fun updateScoreText() {
-        tvScore.text = "Wynik: ${manager.score}"
-    }
-
-    private fun showGameOverDialog() {
-        saveScore()
-
-        AlertDialog.Builder(this)
-            .setTitle("Koniec gry 😿")
-            .setMessage("Nie ma już możliwych ruchów!")
-            .setPositiveButton("Zacznij od nowa") { _, _ ->
-                manager.reset()
-                gameView.drawBoard()
-                updateScoreText()
-                // showScoresTab()
-            }
-            .setNegativeButton("Wyjdź z gry") { _, _ -> finish() }
-            .setCancelable(false)
-            .show()
-    }
-
     private fun saveScore() {
         try {
             val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
@@ -332,5 +384,4 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-// Model wyników
 data class StoredScore(val score: Int)

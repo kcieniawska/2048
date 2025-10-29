@@ -11,6 +11,13 @@ class GameManager(val size: Int = 4) {
     var score: Int = 0
         private set
 
+    // === UNDO I 2048 ===
+    private var previousBoard: Array<Array<Tile>>? = null
+    private var previousScore: Int = 0
+    var reached2048: Boolean = false // Wymagane, aby MainActivity mogła sprawdzać warunek 2048
+        private set
+    // ====================
+
     init {
         reset()
     }
@@ -22,11 +29,46 @@ class GameManager(val size: Int = 4) {
             }
         }
         score = 0
-        addRandomTile() // startujemy od jednego kafelka
+        previousBoard = null
+        previousScore = 0
+        reached2048 = false
+        addRandomTile() // Start standardowej gry
     }
 
-    // Zapisuje stan kafelków (wartość, pozycja) przed ruchem
+    // === FUNKCJA UNDO ===
+    fun undo(): Boolean {
+        if (previousBoard != null) {
+            for (i in 0 until size) {
+                for (j in 0 until size) {
+                    board[i][j] = previousBoard!![i][j].copy()
+                }
+            }
+            score = previousScore
+
+            previousBoard = null
+            previousScore = 0
+
+            return true
+        }
+        return false
+    }
+    // ====================
+
+    // Zapisuje stan kafelków przed ruchem
     private fun saveTilesState() {
+        // Zapis stanu do undo
+        previousBoard = Array(size) { i ->
+            Array(size) { j ->
+                board[i][j].copy().apply {
+                    this.previousRow = i
+                    this.previousCol = j
+                    this.mergedFrom = null
+                }
+            }
+        }
+        previousScore = score
+
+        // Zapis pozycji dla animacji
         for (i in 0 until size) {
             for (j in 0 until size) {
                 board[i][j].savePosition(i, j)
@@ -41,38 +83,17 @@ class GameManager(val size: Int = 4) {
         saveTilesState()
         var moved = false
         for (i in 0 until size) {
-            // Konwersja na listę wartości, by użyć logicznego compressAndMerge
             val originalValues = board[i].map { it.value }.toMutableList()
             val (newRowValues, points, changed, mergedIndices) = compressAndMerge(originalValues)
 
             if (changed) {
                 moved = true
                 score += points
-
-                // Aktualizacja planszy i stanu animacji
                 for (j in 0 until size) {
                     val tile = board[i][j]
-                    val newValue = newRowValues[j]
-
-                    if (tile.value != newValue) {
-                        tile.value = newValue
-                        if (newValue != 0) {
-                            // Jeśli wartość się zmieniła, to jest nowy kafelek lub wynik mergowania
-                            // Musimy zlokalizować, skąd ten kafelek przyszedł.
-                            // W prostym 2048 to jest trudne bez bardziej złożonego śledzenia,
-                            // ale przy standardowej implementacji:
-                            // 1. Kafelki, które się przesunęły, miały pozycję (i, j')
-                            // 2. Kafelki wynikające z mergowania są pod j-tym indeksem.
-
-                            // Na potrzeby animacji, założymy, że kafelek przesunął się ZAWSZE
-                            // Z najbliższego niezerowego kafelka, który jest *przed* nim (lub to ten sam).
-                            // Ponieważ compressAndMerge nie zwraca pełnej mapy, uproszczmy logikę.
-                            // Używamy mergedFrom tylko dla połączeń, reszta animacji będzie liniowa.
-
-                            if (mergedIndices.contains(j)) {
-                                tile.mergedFrom = i to j // Sygnalizacja, że kafelek jest wynikiem połączenia
-                            }
-                        }
+                    tile.value = newRowValues[j]
+                    if (mergedIndices.contains(j)) {
+                        tile.mergedFrom = i to j
                     }
                 }
             }
@@ -85,7 +106,7 @@ class GameManager(val size: Int = 4) {
         saveTilesState()
         var moved = false
         for (i in 0 until size) {
-            val originalValues = board[i].map { it.value }.reversed().toMutableList() // Odwrócona wiersza
+            val originalValues = board[i].map { it.value }.reversed().toMutableList()
             val (newRowValuesReversed, points, changed, mergedIndices) = compressAndMerge(originalValues)
 
             if (changed) {
@@ -93,19 +114,14 @@ class GameManager(val size: Int = 4) {
                 score += points
             }
 
-            // Odwrócenie i aktualizacja planszy
             val newRowValues = newRowValuesReversed.reversed()
             val mergedIndicesNormal = mergedIndices.map { size - 1 - it }
 
             for (j in 0 until size) {
                 val tile = board[i][j]
-                val newValue = newRowValues[j]
-
-                if (tile.value != newValue) {
-                    tile.value = newValue
-                    if (mergedIndicesNormal.contains(j)) {
-                        tile.mergedFrom = i to j
-                    }
+                tile.value = newRowValues[j]
+                if (mergedIndicesNormal.contains(j)) {
+                    tile.mergedFrom = i to j
                 }
             }
         }
@@ -126,13 +142,9 @@ class GameManager(val size: Int = 4) {
 
                 for (i in 0 until size) {
                     val tile = board[i][j]
-                    val newValue = newColValues[i]
-
-                    if (tile.value != newValue) {
-                        tile.value = newValue
-                        if (mergedIndices.contains(i)) {
-                            tile.mergedFrom = i to j
-                        }
+                    tile.value = newColValues[i]
+                    if (mergedIndices.contains(i)) {
+                        tile.mergedFrom = i to j
                     }
                 }
             }
@@ -158,13 +170,9 @@ class GameManager(val size: Int = 4) {
 
             for (i in 0 until size) {
                 val tile = board[i][j]
-                val newValue = newColValues[i]
-
-                if (tile.value != newValue) {
-                    tile.value = newValue
-                    if (mergedIndicesNormal.contains(i)) {
-                        tile.mergedFrom = i to j
-                    }
+                tile.value = newColValues[i]
+                if (mergedIndicesNormal.contains(i)) {
+                    tile.mergedFrom = i to j
                 }
             }
         }
@@ -172,10 +180,7 @@ class GameManager(val size: Int = 4) {
         return moved
     }
 
-    // ====================================================
-    //  compressAndMerge: usuń zera, zrób mergy, dopasuj rozmiar
-    //  Zwraca: (newList, pointsGained, changedFlag, mergedIndices)
-    // ====================================================
+    // Zmodyfikowana funkcja do śledzenia 2048
     private fun compressAndMerge(row: MutableList<Int>): Quad<MutableList<Int>, Int, Boolean, List<Int>> {
         val original = row.toList()
         val filtered = row.filter { it != 0 }.toMutableList()
@@ -187,14 +192,19 @@ class GameManager(val size: Int = 4) {
         while (i < filtered.size - 1) {
             if (filtered[i] != 0 && filtered[i] == filtered[i + 1]) {
 
-                // OGRANICZENIE DO 2048:
                 if (filtered[i] * 2 <= 2048) {
-                    filtered[i] *= 2
-                    points += filtered[i]
-                    mergedIndices.add(filteredIndex) // Zapisujemy indeks w nowym, pełnym rzędzie
+                    val newTileValue = filtered[i] * 2
+                    filtered[i] = newTileValue
+                    points += newTileValue
+                    mergedIndices.add(filteredIndex)
+
+                    if (newTileValue == 2048) {
+                        reached2048 = true
+                    }
+
                     filtered.removeAt(i + 1)
                 } else {
-                    i++ // Nie łączymy, jeśli wynik > 2048, tylko przechodzimy dalej
+                    i++
                 }
             } else {
                 i++
@@ -221,22 +231,19 @@ class GameManager(val size: Int = 4) {
         if (emptyCells.isNotEmpty()) {
             val (i, j) = emptyCells.random()
             board[i][j].value = if (Random.nextFloat() < 0.9f) 2 else 4
-            // Nowe kafelki nie mają poprzedniej pozycji, co zasygnalizuje, że mają się "pojawiś"
             board[i][j].previousRow = -1
             board[i][j].previousCol = -1
         }
     }
 
     fun isGameOver(): Boolean {
-        // jeśli jest puste pole -> nie ma końca
         if (board.any { row -> row.any { it.isEmpty() } }) return false
 
-        // sprawdź, czy jest jakieś sąsiednie równe pole (pion/poziom)
         for (i in 0 until size) {
             for (j in 0 until size) {
                 val v = board[i][j].value
-                if (i < size - 1 && board[i + 1][j].value == v && v <= 1024) return false // Sprawdzenie, czy można połączyć
-                if (j < size - 1 && board[i][j + 1].value == v && v <= 1024) return false // Sprawdzenie, czy można połączyć
+                if (i < size - 1 && board[i + 1][j].value == v) return false
+                if (j < size - 1 && board[i][j + 1].value == v) return false
             }
         }
         return true

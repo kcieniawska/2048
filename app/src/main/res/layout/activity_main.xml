@@ -7,7 +7,6 @@
     android:background="#121212"
     android:padding="8dp">
 
-    <!-- Tytuł gry -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
@@ -19,7 +18,6 @@
         android:layout_gravity="center_horizontal"
         android:paddingBottom="8dp"/>
 
-    <!-- Aktualny wynik -->
     <TextView
         android:id="@+id/tvScore"
         android:layout_width="wrap_content"
@@ -30,7 +28,6 @@
         android:layout_gravity="center_horizontal"
         android:paddingBottom="8dp"/>
 
-    <!-- Plansza gry -->
     <com.example.a2048.GameView
         android:id="@+id/gameView"
         android:layout_width="match_parent"
@@ -38,7 +35,6 @@
         android:layout_weight="1"
         android:padding="16dp"/>
 
-    <!-- Kontener Easter Egga -->
     <LinearLayout
         android:id="@+id/easterEggContainer"
         android:orientation="vertical"
@@ -73,14 +69,12 @@
             android:contentDescription="Ukryte zdjęcie"/>
     </LinearLayout>
 
-    <!-- Kontener na zakładki -->
     <FrameLayout
         android:id="@+id/tabContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp">
 
-        <!-- Layout wyników -->
         <LinearLayout
             android:id="@+id/layoutScores"
             android:layout_width="match_parent"
@@ -108,7 +102,6 @@
                 android:clipToPadding="false"/>
         </LinearLayout>
 
-        <!-- Layout autora -->
         <LinearLayout
             android:id="@+id/layoutAuthor"
             android:orientation="vertical"
@@ -120,7 +113,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Wersja 1.3"
+                android:text="Wersja 1.4"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp"
                 android:paddingBottom="4dp"/>
@@ -128,7 +121,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Ostatnia aktualizacja: 24.10.2025"
+                android:text="Ostatnia aktualizacja: 29.10.2025"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp"
                 android:paddingBottom="16dp"/>
@@ -149,7 +142,6 @@
                 android:textSize="16sp"
                 android:paddingBottom="16dp"/>
 
-            <!-- Przycisk listy zmian -->
             <Button
                 android:id="@+id/btnChangelog"
                 android:layout_width="wrap_content"
@@ -159,42 +151,58 @@
                 android:textColor="#FFFFFF"
                 android:layout_marginBottom="8dp"/>
 
-            <!-- ScrollView z changelogiem -->
             <ScrollView
-    android:id="@+id/scrollChangelog"
-    android:layout_width="match_parent"
-    android:layout_height="300dp"
-    android:visibility="gone"
-    android:fillViewport="true"
-    android:scrollbars="vertical"
-    android:layout_marginTop="4dp">
+                android:id="@+id/scrollChangelog"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:visibility="gone"
+                android:fillViewport="true"
+                android:scrollbars="vertical"
+                android:layout_marginTop="4dp">
 
-    <TextView
-        android:id="@+id/tvChangelog"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#FFFFFF"
-        android:padding="8dp"/>
-</ScrollView>
+                <TextView
+                    android:id="@+id/tvChangelog"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFF"
+                    android:padding="8dp"/>
+            </ScrollView>
 
         </LinearLayout>
 
     </FrameLayout>
 
-    <!-- Przycisk restartu -->
-    <Button
-        android:id="@+id/btnRestart"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="4dp"
-        android:backgroundTint="#D84315"
-        android:padding="12dp"
-        android:text="Zacznij od nowa"
-        android:textColor="#FFFFFF"
-        android:textAllCaps="false"/>
+        android:layout_marginBottom="4dp">
+        
+        <Button
+            android:id="@+id/btnUndo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:backgroundTint="#F59A5A" 
+            android:padding="12dp"
+            android:text="COFNIJ RUCH"
+            android:textColor="#FFFFFF"
+            android:textAllCaps="false"/>
 
-    <!-- Zakładki -->
+        <Button
+            android:id="@+id/btnRestart"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:backgroundTint="#D84315"
+            android:padding="12dp"
+            android:text="Zacznij od nowa"
+            android:textColor="#FFFFFF"
+            android:textAllCaps="false"/>
+    </LinearLayout>
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
