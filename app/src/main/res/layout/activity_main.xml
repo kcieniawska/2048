@@ -1,193 +1,262 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#121212"
+    android:orientation="vertical"
     android:padding="8dp">
 
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="2048"
-        android:textSize="36sp"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
         android:layout_gravity="center_horizontal"
-        android:paddingBottom="8dp"/>
+        android:paddingBottom="4dp"
+        android:text="2048"
+        android:textColor="#FFFFFF"
+        android:textSize="36sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tvScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Wynik: 0"
-        android:textSize="20sp"
-        android:textColor="#FFFFFF"
         android:layout_gravity="center_horizontal"
-        android:paddingBottom="8dp"/>
-
-    <com.example.a2048.GameView
-        android:id="@+id/gameView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="16dp"/>
-
-    <LinearLayout
-        android:id="@+id/easterEggContainer"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:visibility="gone"
-        android:padding="16dp">
-
-        <TextView
-            android:id="@+id/hiddenText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pozdrowienia ze słonecznego Podhala :)"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:layout_gravity="center_horizontal"
-            android:paddingBottom="16dp"
-            android:visibility="visible"/> <ImageView
-            android:id="@+id/hiddenImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:maxWidth="300dp"
-            android:maxHeight="300dp"
-            android:scaleType="fitCenter"
-            android:visibility="visible"
-            android:src="@drawable/easter_egg_image"
-            android:contentDescription="Ukryte zdjęcie"/> </LinearLayout>
+        android:paddingBottom="8dp"
+        android:text="Wynik: 0"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp" />
 
     <FrameLayout
         android:id="@+id/tabContent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp">
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <com.example.a2048.GameView
+            android:id="@+id/gameView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/easterEggContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#121212"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/hiddenText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="16dp"
+                android:text="Pozdrowienia z Podhala! 🏔️"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/hiddenImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:maxHeight="300dp"
+                android:maxWidth="300dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/easter_egg_image" />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/layoutScores"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
+            android:padding="8dp"
             android:visibility="gone">
 
             <TextView
                 android:id="@+id/tvNoScores"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Brak wyników"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
                 android:gravity="center"
-                android:padding="16dp"/>
+                android:padding="16dp"
+                android:text="Brak zapisanych wyników"
+                android:textColor="#AAAAAA" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvScores"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:padding="8dp"
-                android:clipToPadding="false"/>
+                android:layout_height="match_parent" />
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/layoutAuthor"
-            android:orientation="vertical"
+            android:id="@+id/layoutInfo"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
             android:padding="16dp"
             android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Wersja 1.4"
+                android:layout_marginBottom="16dp"
+                android:text="Co nowego? ✨"
                 android:textColor="#FFFFFF"
-                android:textSize="20sp"
-                android:paddingBottom="4dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Ostatnia aktualizacja: 2025"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:paddingBottom="16dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Autor: Karolina Cieniawska"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:paddingBottom="8dp"/>
-
-            <Button
-                android:id="@+id/btnChangelog"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Co nowego?"
-                android:backgroundTint="#555555"
-                android:textColor="#FFFFFF"/>
-
+                android:textSize="24sp"
+                android:textStyle="bold" />
+			<TextView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="center"
+					android:text="Projekt na przedmiot 'Aplikacje Mobilne'\nna Akademię Nauk Stosowanych w Nowym Targu"
+					android:textColor="#888888"
+					android:textSize="14sp"
+					android:layout_marginBottom="24dp"/>
             <ScrollView
-                android:id="@+id/scrollChangelog"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:visibility="gone"
-                android:layout_marginTop="8dp">
+                android:layout_height="match_parent">
 
                 <TextView
                     android:id="@+id/tvChangelog"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="#FFFFFF"/>
+                    android:lineSpacingExtra="6dp"
+                    android:textColor="#CCCCCC"
+                    android:textSize="16sp" />
+				
             </ScrollView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutAuthor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:text="O Autorze"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginBottom="24dp"
+                app:cardBackgroundColor="#F59A5A"
+                app:cardCornerRadius="75dp"
+                app:cardElevation="15dp"
+                app:cardPreventCornerOverlap="false">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="144dp"
+                    android:layout_height="144dp"
+                    android:layout_gravity="center"
+                    app:cardCornerRadius="72dp"
+                    app:cardPreventCornerOverlap="false">
+
+                    <ImageView
+                        android:id="@+id/ivAuthorPhoto"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/awatar" />
+                </androidx.cardview.widget.CardView>
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Karolina Cieniawska"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="14690@eans-nt.edu.pl"
+                android:textColor="#F59A5A"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Studentka III roku Informatyki Ekonomicznej\nTechnik Informatyk"
+                android:textColor="#CCCCCC"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="24dp"
+                android:text="Zainteresowania: Cukiernictwo, Koty, Grafika, F1 🏎️"
+                android:textColor="#BBBBBB"
+                android:textSize="14sp" />
+
+
+            <Button
+                android:id="@+id/btnUniversity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#444444"
+                android:paddingHorizontal="20dp"
+                android:text="Mój GitHub 💻"
+                android:textColor="#FFFFFF" />
         </LinearLayout>
     </FrameLayout>
 
     <LinearLayout
+        android:id="@+id/controlsContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="8dp">
-        
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+
         <Button
             android:id="@+id/btnUndo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginEnd="4dp"
-            android:backgroundTint="#F59A5A" 
-            android:text="COFNIJ"
-            android:textColor="#FFFFFF"/>
+            android:layout_weight="1"
+            android:backgroundTint="#F59A5A"
+            android:text="COFNIJ" />
 
         <Button
             android:id="@+id/btnRestart"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginStart="4dp"
+            android:layout_weight="1"
             android:backgroundTint="#D84315"
-            android:text="RESTART"
-            android:textColor="#FFFFFF"/>
+            android:text="RESTART" />
     </LinearLayout>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:tabIndicatorColor="@android:color/white"
-        app:tabSelectedTextColor="@android:color/white"
-        app:tabTextColor="#AAAAAA"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="8dp"
+        android:background="#1E1E1E"
+        app:tabIndicatorColor="#F59A5A"
+        app:tabMode="fixed"
+        app:tabSelectedTextColor="#FFFFFF"
+        app:tabTextColor="#888888" />
 
 </LinearLayout>
