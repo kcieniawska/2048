@@ -119,17 +119,13 @@ class MainActivity : AppCompatActivity() {
     private fun toggleEasterEgg() {
         val isEggHidden = easterEggContainer.visibility == View.GONE
         if (isEggHidden) {
-            // Wymuszamy zdjęcie i tekst
             hiddenImage.setImageResource(R.drawable.easter_egg_image)
             hiddenText.text = "Pozdrowienia z Podhala! 🏔️"
-
-            // Wyciągamy na wierzch (naprawa znikania)
             easterEggContainer.bringToFront()
             easterEggContainer.visibility = View.VISIBLE
             easterEggContainer.alpha = 0f
             easterEggContainer.animate().alpha(1f).setDuration(500).start()
 
-            // Ukrywamy resztę
             gameView.visibility = View.GONE
             btnRestart.visibility = View.GONE
             tvScore.visibility = View.GONE
@@ -177,6 +173,8 @@ class MainActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.dialog_win_2048, null)
         val dialog = AlertDialog.Builder(this).setView(view).setCancelable(false).create()
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.window?.setDimAmount(0.8f)
+
         view.findViewById<Button>(R.id.btnContinue).setOnClickListener { dialog.dismiss() }
         view.findViewById<Button>(R.id.btnNewGame).setOnClickListener {
             manager.reset(); gameView.drawBoard(); updateScoreText(); dialog.dismiss()
@@ -184,13 +182,35 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    // NAPRAWIONE: Nowy popup Końca Gry
     private fun showGameOverDialog() {
         if (manager.score > 0) saveScore()
-        AlertDialog.Builder(this).setTitle("Koniec gry 😿").setMessage("Wynik: ${manager.score}")
-            .setPositiveButton("Od nowa") { _, _ ->
-                manager.reset(); gameView.drawBoard(); updateScoreText(); showTab("Gra")
-            }
-            .setNegativeButton("Wyjdź") { _, _ -> finish() }.show()
+
+        val dialogView = layoutInflater.inflate(R.layout.dialog_game_over, null)
+        val dialog = AlertDialog.Builder(this).setView(dialogView).setCancelable(false).create()
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.window?.setDimAmount(0.85f)
+
+        // Ustawienie wyniku
+        dialogView.findViewById<TextView>(R.id.tvFinalScore).text = "Twój wynik: ${manager.score}"
+
+        // Przycisk RESTART
+        dialogView.findViewById<Button>(R.id.btnTryAgain).setOnClickListener {
+            manager.reset()
+            gameView.drawBoard()
+            updateScoreText()
+            btnUndo.isEnabled = false
+            showTab("Gra")
+            dialog.dismiss()
+        }
+
+        // Przycisk WYJŚCIE
+        dialogView.findViewById<Button>(R.id.btnExit).setOnClickListener {
+            dialog.dismiss()
+            finish()
+        }
+
+        dialog.show()
     }
 
     private fun updateScoreText() { tvScore.text = "Wynik: ${manager.score}" }
