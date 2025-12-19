@@ -51,23 +51,21 @@
             android:layout_height="wrap_content"
             android:text="Pozdrowienia ze słonecznego Podhala :)"
             android:textColor="#FFFFFF"
-            android:textSize="18sp"
+            android:textSize="22sp"
+            android:textStyle="bold"
             android:layout_gravity="center_horizontal"
             android:paddingBottom="16dp"
-            android:visibility="gone"/>
-
-        <ImageView
+            android:visibility="visible"/> <ImageView
             android:id="@+id/hiddenImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
-            android:maxWidth="250dp"
-            android:maxHeight="250dp"
+            android:maxWidth="300dp"
+            android:maxHeight="300dp"
             android:scaleType="fitCenter"
-            android:visibility="gone"
+            android:visibility="visible"
             android:src="@drawable/easter_egg_image"
-            android:contentDescription="Ukryte zdjęcie"/>
-    </LinearLayout>
+            android:contentDescription="Ukryte zdjęcie"/> </LinearLayout>
 
     <FrameLayout
         android:id="@+id/tabContent"
@@ -90,14 +88,12 @@
                 android:textColor="#FFFFFF"
                 android:textSize="16sp"
                 android:gravity="center"
-                android:visibility="gone"
                 android:padding="16dp"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvScores"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="250dp"
                 android:padding="8dp"
                 android:clipToPadding="false"/>
         </LinearLayout>
@@ -121,7 +117,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Ostatnia aktualizacja: 29.10.2025"
+                android:text="Ostatnia aktualizacja: 2025"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp"
                 android:paddingBottom="16dp"/>
@@ -129,55 +125,40 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Autor: Karolina Cieniawska | 14690"
+                android:text="Autor: Karolina Cieniawska"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp"
                 android:paddingBottom="8dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Aplikacja wykonana na przedmiot &quot;Aplikacje mobilne&quot; na Akademię Nauk Stosowanych w Nowym Targu"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:paddingBottom="16dp"/>
 
             <Button
                 android:id="@+id/btnChangelog"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Co nowego w aplikacji?"
+                android:text="Co nowego?"
                 android:backgroundTint="#555555"
-                android:textColor="#FFFFFF"
-                android:layout_marginBottom="8dp"/>
+                android:textColor="#FFFFFF"/>
 
             <ScrollView
                 android:id="@+id/scrollChangelog"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="150dp"
                 android:visibility="gone"
-                android:fillViewport="true"
-                android:scrollbars="vertical"
-                android:layout_marginTop="4dp">
+                android:layout_marginTop="8dp">
 
                 <TextView
                     android:id="@+id/tvChangelog"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="#FFFFFF"
-                    android:padding="8dp"/>
+                    android:textColor="#FFFFFF"/>
             </ScrollView>
-
         </LinearLayout>
-
     </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="4dp">
+        android:layout_marginTop="8dp">
         
         <Button
             android:id="@+id/btnUndo"
@@ -186,10 +167,8 @@
             android:layout_weight="1"
             android:layout_marginEnd="4dp"
             android:backgroundTint="#F59A5A" 
-            android:padding="12dp"
-            android:text="COFNIJ RUCH"
-            android:textColor="#FFFFFF"
-            android:textAllCaps="false"/>
+            android:text="COFNIJ"
+            android:textColor="#FFFFFF"/>
 
         <Button
             android:id="@+id/btnRestart"
@@ -198,11 +177,10 @@
             android:layout_weight="1"
             android:layout_marginStart="4dp"
             android:backgroundTint="#D84315"
-            android:padding="12dp"
-            android:text="Zacznij od nowa"
-            android:textColor="#FFFFFF"
-            android:textAllCaps="false"/>
+            android:text="RESTART"
+            android:textColor="#FFFFFF"/>
     </LinearLayout>
+
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
@@ -211,4 +189,5 @@
         app:tabSelectedTextColor="@android:color/white"
         app:tabTextColor="#AAAAAA"
         android:layout_marginTop="8dp"/>
+
 </LinearLayout>

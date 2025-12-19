@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#E6000000" 
+        android:orientation="vertical"
+        android:padding="32dp"
+        android:gravity="center"
+        android:elevation="8dp">
+
+        <TextView
+            android:id="@+id/tvWinTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2048 🐏"
+            android:textColor="#FFFFFF"
+            android:textSize="70sp"
+            android:textStyle="bold"
+            android:shadowColor="#55FFFFFF"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="20" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Niesamowity wynik!\nJesteś mistrzem z Podhala!"
+            android:textColor="#BBBBBB"
+            android:textSize="18sp"
+            android:lineSpacingExtra="4dp"
+            android:gravity="center"
+            android:layout_marginBottom="32dp"/>
+
+        <Button
+            android:id="@+id/btnContinue"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:backgroundTint="#4CAF50"
+            android:text="GRAJ DALEJ"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="12dp" />
+
+        <Button
+            android:id="@+id/btnNewGame"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:backgroundTint="#FF5722"
+            android:text="ZACZNIJ OD NOWA"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"/>
+            
+    </LinearLayout>
+</LinearLayout>
